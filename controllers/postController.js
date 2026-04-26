@@ -100,11 +100,15 @@ exports.getCreate = (req, res) => {
 
 // POST /posts
 exports.createPost = async (req, res) => {
-  const { valid, messages, value } = validatePost(req.body);
-  if (!valid) {
-    req.flash('error_msg', messages[0]);
-    return res.redirect('/posts/create');
-  }
+  // const { valid, messages, value } = validatePost(req.body);
+  const value=req.body;
+  
+
+  // if (!valid) {
+  //   req.flash('error_msg', messages[0]);
+  //   return res.redirect('/posts/create');
+  // }
+  console.log(value);
 
   try {
     // Parse tags
@@ -112,19 +116,41 @@ exports.createPost = async (req, res) => {
     if (typeof tags === 'string') tags = tags.split(',').map(t => t.trim()).filter(Boolean);
 
     // Parse quiz questions from repeating form fields
-    const questions  = [].concat(req.body['quiz_question[]']  || []);
-    const allOptions = [].concat(req.body['quiz_options[][]'] || []);
-    const corrects   = [].concat(req.body['quiz_correct[]']   || []);
-    const explains   = [].concat(req.body['quiz_explanation[]'] || []);
+    // const questions  = [].concat(req.body['quiz_question[]']  || []);
+    // const allOptions = [].concat(req.body['quiz_options[][]'] || []);
+    // const corrects   = [].concat(req.body['quiz_correct[]']   || []);
+    // const explains   = [].concat(req.body['quiz_explanation[]'] || []);
 
-    const quiz = questions
-      .map((q, i) => ({
-        question:     q,
-        options:      allOptions.slice(i * 4, i * 4 + 4),
-        correctIndex: parseInt(corrects[i]) || 0,
-        explanation:  explains[i] || '',
-      }))
-      .filter(q => q.question.trim() && q.options.length >= 2);
+    // const quiz = questions
+    //   .map((q, i) => ({
+    //     question:     q,
+    //     options:      allOptions.slice(i * 4, i * 4 + 4),
+    //     correctIndex: parseInt(corrects[i]) || 0,
+    //     explanation:  explains[i] || '',
+    //   }))
+    //   .filter(q => q.question.trim() && q.options.length >= 2);
+
+    const questions = [].concat(req.body['quiz_question[]'] || []);
+
+// check if ANY real quiz exists
+const hasQuiz = questions.some(q => q && q.trim() !== '');
+
+let quiz = [];
+
+if (hasQuiz) {
+  const allOptions = [].concat(req.body['quiz_options[][]'] || []);
+  const corrects   = [].concat(req.body['quiz_correct[]']   || []);
+  const explains   = [].concat(req.body['quiz_explanation[]'] || []);
+
+  quiz = questions
+    .map((q, i) => ({
+      question: q,
+      options: allOptions.slice(i * 4, i * 4 + 4).filter(opt => opt && opt.trim() !== ''),
+      correctIndex: parseInt(corrects[i]) || 0,
+      explanation: explains[i] || '',
+    }))
+    .filter(q => q.question && q.question.trim() !== '' && q.options.length >= 2);
+}
 
     const post = await Post.create({
       title:        value.title,

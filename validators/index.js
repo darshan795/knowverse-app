@@ -19,7 +19,7 @@ const loginSchema = Joi.object({
 // ── Post validator ────────────────────────────────────────────────────────────
 const postSchema = Joi.object({
   title:        Joi.string().min(5).max(150).required(),
-  body:         Joi.string().min(20).required(),
+  body:         Joi.string().min(5).required(),
   eli5Body:     Joi.string().allow('').optional(),
   codeSnippet:  Joi.string().allow('').optional(),
   codeLanguage: Joi.string().valid('javascript','typescript','python','css','html','bash','sql','java','go','rust').default('javascript'),
@@ -30,10 +30,15 @@ const postSchema = Joi.object({
   difficulty:   Joi.string().valid('beginner','intermediate','advanced').default('beginner'),
   readTime:     Joi.number().min(1).max(60).default(5),
   // Quiz questions (repeating fields from form)
-  'quiz_question[]':     Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
-  'quiz_options[][]':    Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
-  'quiz_correct[]':      Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
-  'quiz_explanation[]':  Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
+  // 'quiz_question[]':     Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
+  // 'quiz_options[][]':    Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
+  // 'quiz_correct[]':      Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
+  // 'quiz_explanation[]':  Joi.alternatives().try(Joi.array(), Joi.string()).optional(),
+
+  'quiz_question[]': Joi.any().optional(),
+'quiz_options[][]': Joi.any().optional(),
+'quiz_correct[]': Joi.any().optional(),
+'quiz_explanation[]': Joi.any().optional(),
 });
 
 // ── Comment validator ─────────────────────────────────────────────────────────
