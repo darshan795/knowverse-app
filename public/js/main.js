@@ -146,7 +146,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 ────────────────────────────────────────────────────────────────────────── */
 function apiFetch(url, options) {
   const defaults = {
-    credentials: 'same-origin',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' }
   };
   return fetch(url, Object.assign({}, defaults, options, {
