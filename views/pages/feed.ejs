@@ -1,0 +1,135 @@
+<div class="feed-layout">
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <p class="sidebar-label">Menu</p>
+    <a href="/feed"      class="nav-item <%= currentPath === '/feed' ? 'active' : '' %>">🏠 Home Feed</a>
+    <a href="/topics/javascript" class="nav-item">🧠 Roadmaps</a>
+    <a href="/micro"     class="nav-item <%= currentPath === '/micro' ? 'active' : '' %>">🎴 Micro-Learn</a>
+    <% if (user) { %>
+    <a href="/bookmarks" class="nav-item <%= currentPath === '/bookmarks' ? 'active' : '' %>">🔖 Bookmarks</a>
+    <a href="/dashboard" class="nav-item <%= currentPath === '/dashboard' ? 'active' : '' %>">📊 Dashboard</a>
+    <% } %>
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-label">Topics</p>
+    <div class="sidebar-tags">
+      <% ['javascript','react','dsa','nodejs','python','typescript','css','system-design'].forEach(tag => { %>
+      <a href="/feed?tags=<%= tag %>" class="sidebar-tag <%= (filters && filters.tags === tag) ? 'active' : '' %>">#<%= tag %></a>
+      <% }) %>
+    </div>
+    <% if (user) { %>
+    <div class="sidebar-xp">
+      <div class="xp-row">
+        <span class="xp-label-txt">Level <%= user.level %></span>
+        <span class="xp-val"><%= user.xp %> XP</span>
+      </div>
+      <div class="xp-track"><div class="xp-fill" style="width:<%= user.xpPercent %>%"></div></div>
+      <span class="xp-level-label"><%= user.levelLabel %></span>
+    </div>
+    <% } %>
+    <% if (user) { %>
+    <a href="/posts/create" class="btn-primary btn-block mt-auto">+ Write Post</a>
+    <% } %>
+  </aside>
+
+  <!-- MAIN FEED -->
+  <div class="feed-main">
+    <div class="feed-top">
+      <h1 class="feed-heading">
+        <% if (filters && filters.search) { %>Results for "<%= filters.search %>"
+        <% } else if (filters && filters.tags) { %>#<%= filters.tags %>
+        <% } else { %>For You<% } %>
+      </h1>
+      <% if (pagination) { %><span class="feed-count"><%= pagination.total %> posts</span><% } %>
+    </div>
+
+    <!-- Search bar -->
+    <form action="/feed" method="GET" class="search-form">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3" stroke-linecap="round"/></svg>
+        <input name="search" value="<%= (filters && filters.search) || '' %>" placeholder="Search posts, topics…" class="search-input"/>
+      </div>
+      <% if (filters && filters.tags) { %><input type="hidden" name="tags" value="<%= filters.tags %>"/><% } %>
+    </form>
+
+    <!-- Filter chips -->
+    <div class="filter-chips">
+      <% [['all','All'],['beginner','🟢 Beginner'],['intermediate','🟡 Mid'],['advanced','🔴 Advanced']].forEach(([val,label]) => { %>
+      <a href="/feed?<%= filters && filters.tags ? 'tags='+filters.tags+'&' : '' %>difficulty=<%= val %>"
+         class="filter-chip <%= (!filters || !filters.difficulty || filters.difficulty === val || (val === 'all' && !filters.difficulty)) ? 'active' : '' %>">
+        <%= label %>
+      </a>
+      <% }) %>
+    </div>
+
+    <!-- Post cards -->
+    <div class="posts-grid" id="posts-container">
+      <% if (posts && posts.length > 0) { %>
+        <% posts.forEach((post, i) => { %>
+        <%- include('../partials/post-card', { post, user }) %>
+        <% }) %>
+      <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>No posts found for this filter.</p>
+        <a href="/feed" class="btn-ghost btn-sm mt-16">Clear filters</a>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination && pagination.pages > 1) { %>
+    <div class="pagination">
+      <% if (pagination.page > 1) { %>
+      <a href="/feed?page=<%= pagination.page - 1 %><%= filters && filters.tags ? '&tags='+filters.tags : '' %><%= filters && filters.difficulty ? '&difficulty='+filters.difficulty : '' %>" class="btn-ghost btn-sm">← Prev</a>
+      <% } %>
+      <span class="page-info">Page <%= pagination.page %> of <%= pagination.pages %></span>
+      <% if (pagination.hasMore) { %>
+      <a href="/feed?page=<%= pagination.page + 1 %><%= filters && filters.tags ? '&tags='+filters.tags : '' %><%= filters && filters.difficulty ? '&difficulty='+filters.difficulty : '' %>" class="btn-primary btn-sm">Next →</a>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+    <% if (user) { %>
+    <div class="panel-card">
+      <div class="panel-title">Your Streak</div>
+      <div class="streak-row">
+        <span class="streak-fire">🔥 <%= user.streak %></span>
+        <div class="streak-info">
+          <span>day streak</span>
+          <span class="streak-sub"><%= user.streak > 5 ? "You're on fire!" : "Keep going!" %></span>
+        </div>
+      </div>
+      <div class="day-dots">
+        <% ['M','T','W','T','F','S','S'].forEach((d, i) => { %>
+        <div class="day-dot <%= i < user.streak % 7 ? 'done' : i === user.streak % 7 ? 'today' : '' %>"><%= d %></div>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+    <div class="panel-card">
+      <div class="panel-title">Trending Tags</div>
+      <% [
+        { tag:'#TypeScript',    cnt:'1.2k' },
+        { tag:'#SystemDesign', cnt:'890' },
+        { tag:'#React',        cnt:'784' },
+        { tag:'#DSA',          cnt:'641' },
+        { tag:'#NodeJS',       cnt:'509' },
+      ].forEach(t => { %>
+      <a href="/feed?tags=<%= t.tag.replace('#','') %>" class="trending-row">
+        <span class="trending-tag"><%= t.tag %></span>
+        <span class="trending-cnt"><%= t.cnt %> posts</span>
+      </a>
+      <% }) %>
+    </div>
+
+    <a href="/micro" class="panel-card micro-preview">
+      <div class="micro-label">Concept of the day</div>
+      <p class="micro-text">The JS Event Loop processes the call stack first, then drains the microtask queue, then picks the next macrotask.</p>
+      <span class="micro-link">Swipe to explore →</span>
+    </a>
+  </aside>
+</div>

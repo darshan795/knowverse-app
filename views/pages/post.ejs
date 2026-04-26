@@ -1,0 +1,283 @@
+<div class="post-detail-layout">
+  <div class="post-detail-main">
+    <!-- Back -->
+    <a href="/feed" class="back-link">← Back to feed</a>
+
+    <!-- Post header card -->
+    <div class="detail-card">
+      <div class="post-card-header mb-20">
+        <div class="post-avatar" style="background:hsl(<%= (post.author && post.author.username ? post.author.username.charCodeAt(0)*13%360 : 200) %>,55%,50%)">
+          <%= post.author ? post.author.username[0].toUpperCase() : '?' %>
+        </div>
+        <div class="post-meta">
+          <span class="post-author"><%= post.author ? post.author.username : 'Unknown' %></span>
+          <span class="post-date">
+            <%= new Date(post.createdAt).toLocaleDateString('en-IN',{month:'long',day:'numeric',year:'numeric'}) %>
+            · <%= post.readTime %> min read · <%= (post.views||0).toLocaleString() %> views
+          </span>
+        </div>
+        <span class="diff-badge <%= post.difficulty === 'beginner' ? 'badge-beg' : post.difficulty === 'intermediate' ? 'badge-mid' : 'badge-adv' %>">
+          <%= post.difficulty %>
+        </span>
+      </div>
+
+      <h1 class="detail-title"><%= post.title %></h1>
+
+      <div class="post-tags mb-20">
+        <% (post.tags||[]).forEach(t => { %>
+        <a href="/feed?tags=<%= t %>" class="post-tag">#<%= t %></a>
+        <% }) %>
+      </div>
+
+      <!-- ELI5 toggle -->
+      <% if (post.eli5Body) { %>
+      <div class="eli5-toggle">
+        <span class="eli5-label">Reading mode:</span>
+        <div class="mode-switch">
+          <button class="mode-btn active" id="btn-normal" onclick="switchMode('normal')">Normal</button>
+          <button class="mode-btn" id="btn-eli5" onclick="switchMode('eli5')">ELI5 🧒</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Body -->
+      <div class="post-body" id="body-normal"><%- (post.body||'').replace(/\n/g,'<br>') %></div>
+      <% if (post.eli5Body) { %>
+      <div class="post-body" id="body-eli5" style="display:none"><%- (post.eli5Body||'').replace(/\n/g,'<br>') %></div>
+      <% } %>
+
+      <!-- Code block -->
+      <% if (post.codeSnippet) { %>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-lang-label"><%= post.codeLanguage || 'code' %></span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-block" id="code-block-<%= post._id %>"><%= post.codeSnippet %></pre>
+      </div>
+      <% } %>
+
+      <!-- Action bar -->
+      <div class="detail-actions">
+        <button class="action-btn like-btn <%= post.isLiked ? 'liked' : '' %>"
+                data-post="<%= post._id %>"
+                onclick="toggleLike(this)"
+                <%= !user ? 'data-guest="true"' : '' %>>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="<%= post.isLiked ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+          <span class="like-count"><%= post.likeCount || 0 %></span>
+        </button>
+
+        <button class="action-btn save-btn <%= post.isSaved ? 'saved' : '' %>"
+                data-post="<%= post._id %>"
+                onclick="toggleSave(this)"
+                <%= !user ? 'data-guest="true"' : '' %>>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="<%= post.isSaved ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+          </svg>
+          <%= post.isSaved ? 'Saved' : 'Save' %>
+        </button>
+
+        <a href="/topics/<%= (post.tags||[])[0] || 'javascript' %>" class="action-btn ml-auto">
+          View #<%= (post.tags||[])[0] || 'javascript' %> roadmap →
+        </a>
+      </div>
+    </div>
+
+    <!-- Quiz block -->
+    <% if (post.quiz && post.quiz.length > 0) { %>
+    <div class="quiz-block" id="quiz-block">
+      <div class="quiz-block-header">
+        <span>🧪</span>
+        <div>
+          <div class="quiz-block-title">Knowledge Check</div>
+          <div class="quiz-block-sub"><%= post.quiz.length %> question<%= post.quiz.length !== 1 ? 's' : '' %> · Pass at 60%</div>
+        </div>
+        <button class="btn-primary btn-sm" id="quiz-start-btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+      <div id="quiz-content" style="display:none">
+        <div class="quiz-progress-wrap">
+          <div class="quiz-prog-track"><div class="quiz-prog-fill" id="quiz-prog-fill"></div></div>
+          <div class="quiz-timer" id="quiz-timer">30s</div>
+        </div>
+        <div id="quiz-questions">
+          <% post.quiz.forEach((q, qi) => { %>
+          <div class="quiz-question" id="qq-<%= qi %>" style="display:<%= qi === 0 ? 'block' : 'none' %>">
+            <p class="quiz-q-text"><%= q.question %></p>
+            <div class="quiz-opts-list">
+              <% q.options.forEach((opt, oi) => { %>
+              <button class="quiz-opt-btn"
+                      data-qi="<%= qi %>"
+                      data-oi="<%= oi %>"
+                      data-correct="<%= q.correctIndex %>"
+                      onclick="answerQuiz(this, <%= qi %>, <%= oi %>, <%= q.correctIndex %>)">
+                <span class="opt-letter"><%= String.fromCharCode(65+oi) %></span>
+                <%= opt %>
+              </button>
+              <% }) %>
+            </div>
+            <p class="quiz-expl" id="qexpl-<%= qi %>" style="display:none"><%= q.explanation %></p>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+      <div id="quiz-result" style="display:none" class="quiz-result-panel">
+        <div class="qr-emoji" id="qr-emoji"></div>
+        <div class="qr-score" id="qr-score"></div>
+        <div class="qr-label" id="qr-label"></div>
+        <div class="qr-xp" id="qr-xp"></div>
+        <svg id="score-ring" viewBox="0 0 80 80" width="80" height="80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
+          <circle id="ring-fill" cx="40" cy="40" r="34" fill="none" stroke="#06d6a0" stroke-width="7"
+                  stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"
+                  transform="rotate(-90 40 40)"/>
+        </svg>
+        <button class="btn-ghost btn-sm" onclick="resetQuiz()">Try Again</button>
+      </div>
+    </div>
+
+    <script>
+    (function(){
+      const questions  = <%- JSON.stringify(post.quiz) %>;
+      const postId     = '<%= post._id %>';
+      const loggedIn   = <%= user ? 'true' : 'false' %>;
+      let step = 0, answers = [], timer = null, timeLeft = 30;
+
+      window.startQuiz = function() {
+        document.getElementById('quiz-start-btn').style.display = 'none';
+        document.getElementById('quiz-content').style.display   = 'block';
+        startTimer();
+        updateProgress();
+      };
+
+      function startTimer() {
+        timeLeft = 30;
+        document.getElementById('quiz-timer').textContent = timeLeft + 's';
+        document.getElementById('quiz-timer').className   = 'quiz-timer';
+        clearInterval(timer);
+        timer = setInterval(() => {
+          timeLeft--;
+          const el = document.getElementById('quiz-timer');
+          el.textContent = timeLeft + 's';
+          if (timeLeft <= 10) el.className = 'quiz-timer danger';
+          if (timeLeft <= 0)  { clearInterval(timer); window.answerQuiz(null, step, -1, questions[step].correctIndex); }
+        }, 1000);
+      }
+
+      function updateProgress() {
+        const pct = ((step) / questions.length) * 100;
+        document.getElementById('quiz-prog-fill').style.width = pct + '%';
+      }
+
+      window.answerQuiz = function(btn, qi, oi, correct) {
+        clearInterval(timer);
+        answers[qi] = oi;
+        // Mark buttons
+        document.querySelectorAll(`[data-qi="${qi}"]`).forEach(b => {
+          const idx = parseInt(b.dataset.oi);
+          if (idx === correct)  b.classList.add('opt-correct');
+          else if (idx === oi)  b.classList.add('opt-wrong');
+          b.disabled = true;
+        });
+        // Show explanation
+        document.getElementById('qexpl-' + qi).style.display = 'block';
+
+        setTimeout(() => {
+          if (step + 1 < questions.length) {
+            document.getElementById('qq-' + step).style.display = 'none';
+            step++;
+            document.getElementById('qq-' + step).style.display = 'block';
+            updateProgress();
+            startTimer();
+          } else {
+            submitQuiz();
+          }
+        }, 1200);
+      };
+
+      async function submitQuiz() {
+        document.getElementById('quiz-content').style.display = 'none';
+        if (!loggedIn) {
+          showResult({ score: calcScore(), passed: calcScore() >= 60, xpEarned: 10, correct: answers.filter((a,i) => a === questions[i].correctIndex).length, total: questions.length });
+          return;
+        }
+        try {
+          const r = await fetch('/api/quiz', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ postId, answers })
+          });
+          const data = await r.json();
+          showResult(data);
+        } catch(e) { showResult({ score: calcScore(), passed: calcScore()>=60, xpEarned:10, correct: answers.filter((a,i)=>a===questions[i].correctIndex).length, total:questions.length }); }
+      }
+
+      function calcScore() {
+        const correct = answers.filter((a,i) => a === questions[i]?.correctIndex).length;
+        return Math.round((correct / questions.length) * 100);
+      }
+
+      function showResult(data) {
+        document.getElementById('quiz-result').style.display = 'block';
+        document.getElementById('qr-emoji').textContent  = data.passed ? '🎉' : '📚';
+        document.getElementById('qr-score').textContent  = data.score + '%';
+        document.getElementById('qr-label').textContent  = data.passed ? 'Quiz Passed!' : 'Keep Studying';
+        document.getElementById('qr-label').className    = 'qr-label ' + (data.passed ? 'pass' : 'fail');
+        document.getElementById('qr-xp').textContent     = '+' + (data.xpEarned||10) + ' XP earned';
+        // Animate ring
+        const circumference = 2 * Math.PI * 34;
+        const offset = circumference * (1 - data.score / 100);
+        const ring   = document.getElementById('ring-fill');
+        ring.style.stroke        = data.passed ? '#06d6a0' : '#f87171';
+        ring.style.transition    = 'stroke-dashoffset 1.2s ease-out';
+        ring.style.strokeDashoffset = offset;
+      }
+
+      window.resetQuiz = function() {
+        step = 0; answers = [];
+        document.getElementById('quiz-result').style.display  = 'none';
+        document.getElementById('quiz-start-btn').style.display = 'block';
+        document.getElementById('quiz-prog-fill').style.width  = '0%';
+        document.getElementById('ring-fill').style.strokeDashoffset = '213.6';
+        document.querySelectorAll('.quiz-question').forEach((el,i) => {
+          el.style.display = i === 0 ? 'block' : 'none';
+        });
+        document.querySelectorAll('.quiz-opt-btn').forEach(b => {
+          b.classList.remove('opt-correct','opt-wrong'); b.disabled = false;
+        });
+        document.querySelectorAll('.quiz-expl').forEach(e => e.style.display = 'none');
+      };
+    })();
+    </script>
+    <% } %>
+
+    <!-- Comments -->
+    <div class="comments-block" id="comments">
+      <h2 class="comments-title">Discussion <span class="comment-count">(<%= comments ? comments.length : 0 %>)</span></h2>
+
+      <% if (user) { %>
+      <div class="comment-compose">
+        <div class="post-avatar" style="background:hsl(<%= user.username.charCodeAt(0)*13%360 %>,55%,50%)">
+          <%= user.username[0].toUpperCase() %>
+        </div>
+        <div class="compose-right">
+          <textarea id="new-comment-body" placeholder="Share your thoughts…" rows="3" class="kv-textarea"></textarea>
+          <button class="btn-primary btn-sm" onclick="postComment('<%= post._id %>', null)">Post Comment</button>
+        </div>
+      </div>
+      <% } else { %>
+      <p class="login-to-comment"><a href="/auth/login">Sign in</a> to join the discussion</p>
+      <% } %>
+
+      <div id="comments-list">
+        <% if (comments && comments.length > 0) { %>
+          <% comments.forEach(c => { %>
+            <%- include('../partials/comment-node', { comment: c, user, postAuthorId: post.author ? post.author._id.toString() : '', depth: 0 }) %>
+          <% }) %>
+        <% } else { %>
+        <p class="no-comments">No comments yet. Be the first!</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

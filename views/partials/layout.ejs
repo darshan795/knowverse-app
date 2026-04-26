@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title><%= typeof title !== 'undefined' ? title : 'KnowVerse' %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'landing-page' : '' %>">
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- Scroll progress (non-landing only) -->
+<% if (typeof currentPath !== 'undefined' && currentPath !== '/') { %>
+<div id="scroll-progress"></div>
+<% } %>
+
+<!-- Flash messages -->
+<% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+<div class="flash flash-success" id="flash-msg">
+  <span>✓</span> <%= success_msg %>
+  <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+</div>
+<% } %>
+<% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+<div class="flash flash-error" id="flash-msg">
+  <span>✕</span> <%= error_msg %>
+  <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+</div>
+<% } %>
+<% if (typeof error !== 'undefined' && error.length > 0) { %>
+<div class="flash flash-error">
+  <span>✕</span> <%= error %>
+  <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+</div>
+<% } %>
+
+<!-- Navigation -->
+<nav id="main-nav" class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'nav-transparent' : 'nav-solid' %>">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">K</div>
+      <span class="nav-logo-text">KnowVerse</span>
+    </a>
+
+    <% if (typeof currentPath !== 'undefined' && currentPath !== '/') { %>
+    <ul class="nav-links">
+      <li><a href="/feed" class="<%= currentPath === '/feed' ? 'active' : '' %>">Feed</a></li>
+      <li><a href="/topics/javascript" class="<%= currentPath.startsWith('/topics') ? 'active' : '' %>">Roadmaps</a></li>
+      <li><a href="/micro" class="<%= currentPath === '/micro' ? 'active' : '' %>">Micro-Learn</a></li>
+      <% if (user) { %>
+      <li><a href="/bookmarks" class="<%= currentPath === '/bookmarks' ? 'active' : '' %>">Bookmarks</a></li>
+      <li><a href="/dashboard" class="<%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a></li>
+      <% } %>
+    </ul>
+    <% } else { %>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#roadmap">Roadmaps</a></li>
+      <li><a href="#testimonials">Stories</a></li>
+    </ul>
+    <% } %>
+
+    <div class="nav-actions">
+      <% if (user) { %>
+        <a href="/posts/create" class="btn-primary btn-sm">+ Write</a>
+        <div class="user-chip" id="user-menu-btn">
+          <div class="user-avatar-sm" style="background:hsl(<%= user.username.charCodeAt(0) * 13 % 360 %>,55%,50%)">
+            <%= user.username[0].toUpperCase() %>
+          </div>
+          <span><%= user.username %></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="dropdown-header">
+            <div class="dropdown-xp">
+              <span class="xp-num"><%= user.xp %> XP</span>
+              <span class="xp-level">Level <%= user.level %> · <%= user.levelLabel %></span>
+            </div>
+            <div class="xp-bar-mini">
+              <div class="xp-fill-mini" style="width:<%= user.xpPercent %>%"></div>
+            </div>
+          </div>
+          <a href="/dashboard" class="dropdown-item">📊 Dashboard</a>
+          <a href="/bookmarks" class="dropdown-item">🔖 Bookmarks</a>
+          <a href="/posts/create" class="dropdown-item">✏️ Write Post</a>
+          <div class="dropdown-divider"></div>
+          <a href="/auth/logout" class="dropdown-item dropdown-logout">Sign Out</a>
+        </div>
+      <% } else { %>
+        <a href="/auth/login"    class="btn-ghost btn-sm">Sign in</a>
+        <a href="/auth/register" class="btn-primary btn-sm">Join free</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<!-- Page content -->
+<main>
+  <%- body %>
+</main>
+
+<!-- Footer (not on landing) -->
+<% if (typeof currentPath !== 'undefined' && currentPath !== '/') { %>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="nav-logo-icon" style="width:26px;height:26px;font-size:12px">K</div>
+      <span>KnowVerse</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="/feed">Feed</a></li>
+      <li><a href="/topics/javascript">Roadmaps</a></li>
+      <li><a href="/micro">Micro-Learn</a></li>
+    </ul>
+    <span class="footer-copy">© 2025 KnowVerse</span>
+  </div>
+</footer>
+<% } %>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

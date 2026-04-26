@@ -1,0 +1,110 @@
+<div class="create-layout">
+  <div class="create-header">
+    <h1 class="page-title">Write a Post</h1>
+    <div class="create-header-actions">
+      <a href="/feed" class="btn-ghost btn-sm">Cancel</a>
+      <button class="btn-primary btn-sm" onclick="document.getElementById('post-form').submit()">Publish</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-switcher">
+    <button class="tab-btn active" onclick="switchTab(this,'content')">Content</button>
+    <button class="tab-btn" onclick="switchTab(this,'quiz')">Quiz</button>
+    <button class="tab-btn" onclick="switchTab(this,'preview')">Preview</button>
+  </div>
+
+  <form action="/posts" method="POST" id="post-form">
+    <!-- CONTENT TAB -->
+    <div class="tab-panel" id="tab-content">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" name="title" class="kv-input" placeholder="Give your post a great title…" maxlength="150" required
+               oninput="updatePreview()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content * (plain text — markdown will display)</label>
+        <textarea name="body" class="kv-input kv-textarea-tall" placeholder="## Your Heading&#10;&#10;Write your post content here…"
+                  oninput="updatePreview()" required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ELI5 Version <span class="form-label-opt">(optional simplified explanation)</span></label>
+        <textarea name="eli5Body" class="kv-input" rows="4" placeholder="Explain as if talking to a 5-year-old…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Code Snippet <span class="form-label-opt">(optional)</span></label>
+        <select name="codeLanguage" class="kv-input kv-select mb-8">
+          <% ['javascript','typescript','python','css','html','bash','sql','java','go','rust'].forEach(l => { %>
+          <option value="<%= l %>"><%= l %></option>
+          <% }) %>
+        </select>
+        <textarea name="codeSnippet" class="kv-input kv-textarea-code" rows="8" placeholder="Paste your code here…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags *</label>
+        <div class="tag-picker">
+          <% ['javascript','react','nodejs','dsa','python','typescript','css','system-design','git','sql'].forEach(tag => { %>
+          <label class="tag-pick-label">
+            <input type="checkbox" name="tags[]" value="<%= tag %>" class="tag-pick-cb"/>
+            <span class="tag-pick-btn">#<%= tag %></span>
+          </label>
+          <% }) %>
+        </div>
+        <input type="text" name="tags" class="kv-input mt-8" placeholder="Or type custom tags, comma-separated"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Difficulty</label>
+          <div class="diff-picker">
+            <% ['beginner','intermediate','advanced'].forEach(d => { %>
+            <label class="diff-label">
+              <input type="radio" name="difficulty" value="<%= d %>" <%= d === 'beginner' ? 'checked' : '' %>/>
+              <span class="diff-btn diff-btn-<%= d %>"><%= d %></span>
+            </label>
+            <% }) %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Read time (minutes)</label>
+          <input type="number" name="readTime" class="kv-input" value="5" min="1" max="60"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ TAB -->
+    <div class="tab-panel" id="tab-quiz" style="display:none">
+      <p class="quiz-builder-intro">Add MCQ questions so readers can test their understanding.</p>
+      <div id="quiz-questions-builder">
+        <div class="quiz-q-block" id="qq-block-0">
+          <div class="qq-block-header">
+            <span class="qq-label">Question 1</span>
+            <button type="button" class="btn-ghost btn-xs" onclick="removeQuestion(0)">Remove</button>
+          </div>
+          <input type="text" name="quiz_question[]" class="kv-input mb-8" placeholder="What is the time complexity of binary search?"/>
+          <div class="quiz-opts-builder">
+            <% for(let i=0;i<4;i++) { %>
+            <div class="quiz-opt-row">
+              <label class="correct-radio">
+                <input type="radio" name="quiz_correct[]" value="<%= i %>"/>
+                <span class="radio-dot"></span>
+              </label>
+              <input type="text" name="quiz_options[][]" class="kv-input" placeholder="Option <%= String.fromCharCode(65+i) %>"/>
+            </div>
+            <% } %>
+          </div>
+          <p class="form-hint">Click circle to mark correct answer</p>
+          <input type="text" name="quiz_explanation[]" class="kv-input mt-8" placeholder="Explanation shown after answering…"/>
+        </div>
+      </div>
+      <button type="button" class="btn-ghost btn-sm mt-16" onclick="addQuestion()">+ Add Another Question</button>
+    </div>
+
+    <!-- PREVIEW TAB -->
+    <div class="tab-panel" id="tab-preview" style="display:none">
+      <div class="detail-card" id="preview-card">
+        <h1 class="detail-title" id="prev-title">Your title here</h1>
+        <div class="post-body" id="prev-body" style="color:var(--muted)">Start typing to see preview…</div>
+      </div>
+    </div>
+  </form>
+</div>

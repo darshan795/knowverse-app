@@ -1,0 +1,268 @@
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Now live — v2.0 with AI suggestions
+    </div>
+    <h1 class="hero-title">
+      Learn smarter,<br>
+      <span class="grad">not harder</span>
+      <span class="hero-sub-title">The social learning OS</span>
+    </h1>
+    <p class="hero-sub">
+      KnowVerse combines Instagram-style engagement, Notion-style knowledge organisation, and LeetCode-style quizzes — into one platform that actually makes you better.
+    </p>
+    <div class="hero-actions">
+      <a href="/auth/register" class="btn-primary btn-lg">
+        <span>Start learning free</span>
+      </a>
+      <a href="#how" class="btn-ghost btn-lg arrow-btn">
+        See how it works
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Floating code + quiz card -->
+  <div class="hero-card">
+    <div class="code-card-header">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      <span class="code-card-lang">closures.js</span>
+    </div>
+    <pre class="code-preview"><span class="ck">function</span> <span class="cf">makeCounter</span>() {
+  <span class="ck">let</span> count = <span class="cn">0</span>;
+  <span class="ck">return</span> () => ++count;
+}
+<span class="ck">const</span> c = makeCounter();
+c(); <span class="cc">// 1</span>
+c(); <span class="cc">// 2</span></pre>
+    <div class="inline-quiz">
+      <div class="iq-q">🧪 What does a closure close over?</div>
+      <div class="iq-opt iq-correct">✓ Its outer scope variables</div>
+      <div class="iq-opt">Global variables only</div>
+      <div class="iq-opt">The DOM tree</div>
+    </div>
+    <div class="hero-xp-row">
+      <span class="xp-label-sm">+10 XP · Level 7</span>
+      <div class="xp-track-sm"><div class="xp-fill-sm"></div></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <% const items = ['Infinite Feed','Topic Roadmaps','Live Quizzes','Threaded Comments','XP & Streaks','Micro-Learning','ELI5 Mode','Bookmark Folders','Leaderboards']; %>
+    <% for(let i=0;i<2;i++) { items.forEach(item => { %>
+    <div class="marquee-item"><span class="marquee-dot"></span><%= item %></div>
+    <% })} %>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="section-alt">
+  <div class="container">
+    <div class="features-header reveal">
+      <div>
+        <div class="sec-tag">Everything you need</div>
+        <h2 class="sec-h2">Built for serious <span class="grad">learners</span></h2>
+      </div>
+      <p class="features-intro">Every feature is designed to move you from passive reading to active mastery — faster than anything else.</p>
+    </div>
+    <div class="features-grid">
+      <% const features = [
+        { icon:'🏠', title:'Smart Feed',        desc:'Infinite-scroll posts filtered by tag, difficulty, and your history. The more you interact, the smarter it gets.', cls:'fi-1' },
+        { icon:'🧠', title:'Topic Roadmaps',    desc:'Visual learning paths from basics to advanced. Unlock nodes by completing quizzes and reading posts.', cls:'fi-2' },
+        { icon:'🧪', title:'Quiz System',        desc:'MCQs after every post with countdown timer, instant feedback, animated score rings, and XP rewards.', cls:'fi-3' },
+        { icon:'💬', title:'Threaded Comments', desc:'Up to 5 levels of nested replies. Upvote best answers and let authors mark the definitive response.', cls:'fi-4' },
+        { icon:'🎴', title:'Micro-Learning',    desc:'Swipeable flashcards for bite-sized concepts. Drag left or right, tap to flip. Perfect for short breaks.', cls:'fi-5' },
+        { icon:'📊', title:'Dashboard & XP',    desc:'Track streaks, quiz scores, topic progress, and weekly activity charts. Level up from Beginner to Master.', cls:'fi-6' },
+      ]; %>
+      <% features.forEach((f, i) => { %>
+      <div class="feat-card reveal d<%= (i % 3) + 1 %>">
+        <div class="feat-icon <%= f.cls %>"><%= f.icon %></div>
+        <div class="feat-title"><%= f.title %></div>
+        <div class="feat-desc"><%= f.desc %></div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-box reveal d1">
+    <div class="stat-n"><span class="count" data-target="48">0</span><span class="stat-suf">k+</span></div>
+    <div class="stat-lbl">Active learners</div>
+    <div class="stat-sub">Growing 40% month over month</div>
+  </div>
+  <div class="stat-box reveal d2">
+    <div class="stat-n"><span class="count" data-target="12">0</span><span class="stat-suf">k+</span></div>
+    <div class="stat-lbl">Posts published</div>
+    <div class="stat-sub">Across 30+ technical topics</div>
+  </div>
+  <div class="stat-box reveal d3">
+    <div class="stat-n"><span class="count" data-target="94">0</span><span class="stat-suf">%</span></div>
+    <div class="stat-lbl">Quiz pass rate</div>
+    <div class="stat-sub">After 2nd attempt on average</div>
+  </div>
+  <div class="stat-box reveal d4">
+    <div class="stat-n"><span class="count" data-target="4">0</span><span class="stat-suf">x</span></div>
+    <div class="stat-lbl">Faster retention</div>
+    <div class="stat-sub">Vs passive reading alone</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="container">
+  <div class="how-header reveal">
+    <div class="sec-tag">The process</div>
+    <h2 class="sec-h2">How <span class="grad">KnowVerse</span> works</h2>
+    <p class="how-sub">Four steps from signup to mastery.</p>
+  </div>
+  <div class="steps-grid">
+    <% const steps = [
+      { n:'01', title:'Browse & Discover', desc:'Scroll the feed. Filter by tag (#DSA, #React) or difficulty. Like, save, and follow authors that click with you.' },
+      { n:'02', title:'Read & Understand', desc:'Open any post. Toggle ELI5 mode for a simplified take. View the code snippet and copy it with one click.' },
+      { n:'03', title:'Quiz & Earn XP',    desc:'Answer MCQs at the end of every post. Instant feedback and XP that levels up your profile.' },
+      { n:'04', title:'Track & Level Up',  desc:'Watch your dashboard fill with streaks, topic bars, and weekly charts. Climb from Beginner to Master.' },
+    ]; %>
+    <% steps.forEach((s, i) => { %>
+    <div class="step-box reveal d<%= i + 1 %>">
+      <div class="step-num"><%= s.n %></div>
+      <div class="step-title"><%= s.title %></div>
+      <div class="step-desc"><%= s.desc %></div>
+    </div>
+    <% }) %>
+  </div>
+</section>
+
+<!-- ROADMAP PREVIEW -->
+<section id="roadmap" class="section-alt">
+  <div class="container roadmap-wrap">
+    <div class="roadmap-text reveal-left">
+      <div class="sec-tag">Structured learning</div>
+      <h2 class="sec-h2">Every topic has a <span class="grad">roadmap</span></h2>
+      <p>Don't know where to start? Pick a topic and follow the path — from zero to interview-ready, one node at a time.</p>
+      <div class="tag-cloud">
+        <% const topicTags = [
+          {t:'#JavaScript',cls:''},
+          {t:'#React',cls:''},
+          {t:'#DSA',cls:'green'},
+          {t:'#System Design',cls:'green'},
+          {t:'#NodeJS',cls:'warn'},
+          {t:'#TypeScript',cls:'warn'},
+          {t:'#CSS',cls:''},
+          {t:'#Python',cls:'green'},
+        ]; %>
+        <% topicTags.forEach(tt => { %>
+        <a href="/topics/<%= tt.t.replace('#','').toLowerCase() %>" class="topic-tag <%= tt.cls %>"><%= tt.t %></a>
+        <% }) %>
+      </div>
+      <a href="/auth/register" class="btn-primary btn-lg"><span>Explore roadmaps</span></a>
+    </div>
+    <div class="roadmap-visual reveal-right">
+      <div class="rm-card">
+        <div class="rm-card-title">JavaScript Roadmap</div>
+        <% const rmSteps = [
+          { n:'1', name:'Variables & Types',  sub:'let, const, primitives',          cls:'rn-beg' },
+          { n:'2', name:'Functions & Scope',  sub:'Closures, hoisting, IIFE',         cls:'rn-beg' },
+          { n:'3', name:'Async JavaScript',   sub:'Callbacks, Promises, async/await', cls:'rn-mid' },
+          { n:'4', name:'Event Loop',         sub:'Call stack, microtasks',           cls:'rn-mid' },
+          { n:'5', name:'Advanced Patterns',  sub:'Design patterns, FP, Proxy',       cls:'rn-adv' },
+        ]; %>
+        <% rmSteps.forEach(s => { %>
+        <div class="rm-step">
+          <div class="rm-step-num <%= s.cls %>"><%= s.n %></div>
+          <div>
+            <div class="rm-step-name"><%= s.name %></div>
+            <div class="rm-step-sub"><%= s.sub %></div>
+          </div>
+        </div>
+        <% }) %>
+        <div class="rm-progress">
+          <div class="rm-prog-labels"><span>Your progress</span><span class="rm-prog-pct">65%</span></div>
+          <div class="rm-prog-track"><div class="rm-prog-fill" style="width:65%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" class="container">
+  <div class="test-header reveal">
+    <div class="sec-tag">Learner stories</div>
+    <h2 class="sec-h2">What our <span class="grad">community</span> says</h2>
+  </div>
+  <div class="test-grid">
+    <% const testimonials = [
+      { q:'"KnowVerse finally made DSA click. The roadmap told me where to start and quizzes kept me honest. Cleared my Google interview after 6 weeks."', name:'Rahul Sharma', role:'SDE-2 @ Google · Level 14', av:'R', cls:'ta-1' },
+      { q:'"The ELI5 toggle is genius. Switch to ELI5, instantly makes sense. Then back to the technical — it all clicks."', name:'Priya Nair', role:'Frontend Dev · 47-day streak 🔥', av:'P', cls:'ta-2' },
+      { q:'"I\'ve tried YouTube, Udemy, everything. KnowVerse is different because the community keeps you accountable. The XP system actually works."', name:'Arjun Mehta', role:'CS Student · 2,340 XP', av:'A', cls:'ta-3' },
+    ]; %>
+    <% testimonials.forEach((t, i) => { %>
+    <div class="test-card reveal d<%= i + 1 %>">
+      <p class="test-text"><%= t.q %></p>
+      <div class="test-author">
+        <div class="test-av <%= t.cls %>"><%= t.av %></div>
+        <div>
+          <div class="test-name"><%= t.name %></div>
+          <div class="test-role"><%= t.role %></div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-content">
+    <div class="cta-eyebrow reveal">Free forever for learners</div>
+    <div class="cta-free-badge reveal d1">✨ No credit card required</div>
+    <h2 class="cta-h2 reveal d2">Start your learning<br><span class="grad">journey today</span></h2>
+    <div class="cta-actions reveal d3">
+      <a href="/auth/register" class="btn-primary btn-xl"><span>Create free account</span></a>
+      <a href="#features" class="btn-ghost btn-xl arrow-btn">
+        Explore features
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+    <p class="cta-note reveal d4">Join <span>48,000+</span> learners already on the platform</p>
+  </div>
+</section>
+
+<!-- Landing footer -->
+<footer class="landing-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="nav-logo-icon" style="width:26px;height:26px;font-size:12px">K</div>
+      <span>KnowVerse</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="/auth/register">Get started</a></li>
+    </ul>
+    <span class="footer-copy">© 2025 KnowVerse. Built for learners.</span>
+  </div>
+</footer>

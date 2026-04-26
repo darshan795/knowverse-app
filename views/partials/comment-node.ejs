@@ -1,0 +1,56 @@
+<%
+const isAuthor   = user && user._id.toString() === comment.author._id.toString();
+const isPostAuth = user && user._id.toString() === postAuthorId;
+const upvoted    = user && comment.upvotes && comment.upvotes.map(String).includes(user._id.toString());
+%>
+<div class="comment-node <%= depth > 0 ? 'comment-reply' : '' %>" id="comment-<%= comment._id %>">
+  <div class="comment-avatar" style="background:hsl(<%= comment.author.username.charCodeAt(0)*13%360 %>,50%,50%)">
+    <%= comment.author.username[0].toUpperCase() %>
+  </div>
+  <div class="comment-body-wrap">
+    <div class="comment-meta">
+      <span class="comment-author"><%= comment.author.username %></span>
+      <span class="comment-date"><%= new Date(comment.createdAt).toLocaleDateString('en-IN',{month:'short',day:'numeric'}) %></span>
+      <% if (comment.edited) { %><span class="comment-edited">(edited)</span><% } %>
+      <% if (comment.bestAnswer) { %>
+      <span class="best-badge">✔ Best Answer</span>
+      <% } %>
+    </div>
+    <p class="comment-text <%= comment.deleted ? 'deleted' : '' %>"><%= comment.body %></p>
+    <div class="comment-actions">
+      <button class="comment-action-btn upvote-btn <%= upvoted ? 'upvoted' : '' %>"
+              data-id="<%= comment._id %>"
+              onclick="upvoteComment(this)"
+              <%= !user ? 'data-guest="true"' : '' %>>
+        ▲ <span class="upvote-count"><%= comment.upvotes ? comment.upvotes.length : 0 %></span>
+      </button>
+      <% if (user && depth < 4) { %>
+      <button class="comment-action-btn" onclick="toggleReplyBox('<%= comment._id %>')">Reply</button>
+      <% } %>
+      <% if (isPostAuth && !comment.bestAnswer && depth === 0) { %>
+      <button class="comment-action-btn best-btn" data-id="<%= comment._id %>" onclick="markBest(this)">✔ Mark best</button>
+      <% } %>
+      <% if (isAuthor) { %>
+      <button class="comment-action-btn delete-btn" data-id="<%= comment._id %>" onclick="deleteComment(this)">Delete</button>
+      <% } %>
+    </div>
+
+    <!-- Reply box -->
+    <% if (user) { %>
+    <div class="reply-box" id="reply-box-<%= comment._id %>" style="display:none">
+      <textarea class="kv-textarea" id="reply-text-<%= comment._id %>" placeholder="Reply to <%= comment.author.username %>…" rows="2"></textarea>
+      <div class="reply-box-actions">
+        <button class="btn-primary btn-xs" onclick="postComment('<%= comment._id.toString().slice(0,24) %>', '<%= comment._id %>', '<%= comment._id %>')">Reply</button>
+        <button class="btn-ghost btn-xs" onclick="toggleReplyBox('<%= comment._id %>')">Cancel</button>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Nested replies -->
+    <% if (comment.replies && comment.replies.length > 0) { %>
+      <% comment.replies.forEach(reply => { %>
+        <%- include('./comment-node', { comment: reply, user, postAuthorId, depth: depth + 1 }) %>
+      <% }) %>
+    <% } %>
+  </div>
+</div>

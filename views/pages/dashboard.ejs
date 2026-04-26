@@ -1,0 +1,132 @@
+<div class="dashboard-layout">
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Dashboard</h1>
+      <p class="dash-sub">Welcome back, <%= user.username %> 👋</p>
+    </div>
+    <span class="level-badge">Level <%= user.level %> — <%= user.levelLabel %></span>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stat-cards">
+    <div class="stat-card reveal d1">
+      <div class="sc-label">Total XP</div>
+      <div class="sc-val accent"><%= user.xp.toLocaleString() %></div>
+      <div class="sc-sub">lifetime</div>
+    </div>
+    <div class="stat-card reveal d2">
+      <div class="sc-label">Day Streak</div>
+      <div class="sc-val warn">🔥 <%= user.streak %></div>
+      <div class="sc-sub">consecutive</div>
+    </div>
+    <div class="stat-card reveal d3">
+      <div class="sc-label">Quizzes Done</div>
+      <div class="sc-val accent2"><%= quizHistory ? quizHistory.length : 0 %></div>
+      <div class="sc-sub">all time</div>
+    </div>
+    <div class="stat-card reveal d4">
+      <div class="sc-label">Avg Score</div>
+      <div class="sc-val"><%= avgScore %>%</div>
+      <div class="sc-sub">quiz avg</div>
+    </div>
+  </div>
+
+  <!-- Weekly chart -->
+  <div class="dash-card reveal">
+    <h2 class="dash-card-title">Weekly Activity</h2>
+    <canvas id="weekly-chart" height="180"></canvas>
+  </div>
+
+  <!-- Topic progress -->
+  <div class="dash-card reveal">
+    <h2 class="dash-card-title">Topic Progress</h2>
+    <% const defaultProgress = [
+      { tag:'javascript', percentage:75, quizzesDone:12 },
+      { tag:'react',      percentage:45, quizzesDone:6  },
+      { tag:'dsa',        percentage:30, quizzesDone:8  },
+    ]; %>
+    <% const progData = progress && progress.length > 0 ? progress : defaultProgress; %>
+    <% progData.forEach(p => { %>
+    <div class="progress-row">
+      <div class="prog-row-top">
+        <a href="/topics/<%= p.tag %>" class="prog-tag">#<%= p.tag %></a>
+        <span class="prog-meta"><%= p.quizzesDone %> quizzes · <%= p.percentage %>%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill reveal-width" style="--target-width:<%= p.percentage %>%"></div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <!-- Recent posts -->
+  <% if (posts && posts.length > 0) { %>
+  <div class="dash-card reveal">
+    <h2 class="dash-card-title">Your Posts</h2>
+    <div class="dash-post-list">
+      <% posts.forEach(p => { %>
+      <a href="/posts/<%= p._id %>" class="dash-post-row">
+        <div class="dash-post-info">
+          <span class="dash-post-title"><%= p.title %></span>
+          <div class="dash-post-meta">
+            <span>❤️ <%= p.likes ? p.likes.length : 0 %></span>
+            <span>👁 <%= (p.views||0).toLocaleString() %></span>
+            <span><%= new Date(p.createdAt).toLocaleDateString('en-IN',{month:'short',day:'numeric'}) %></span>
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<script>
+(function(){
+  const weekly = <%- weekly || '[]' %>;
+  if (!weekly.length) return;
+  const ctx  = document.getElementById('weekly-chart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 180);
+  grad.addColorStop(0,   'rgba(124,106,247,0.3)');
+  grad.addColorStop(1,   'rgba(124,106,247,0)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: weekly.map(d => d.day),
+      datasets: [{
+        label: 'XP / Avg Score',
+        data:  weekly.map(d => d.avg || d.count * 15),
+        fill:  true,
+        backgroundColor: grad,
+        borderColor:     '#7c6af7',
+        borderWidth:     2,
+        tension:         0.4,
+        pointBackgroundColor: '#7c6af7',
+        pointRadius:     4,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#6b7280', font:{ size:12 } } },
+        y: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#6b7280', font:{ size:12 } } },
+      },
+    },
+  });
+
+  // Animate progress bars
+  document.querySelectorAll('.reveal-width').forEach(el => {
+    const obs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        el.style.width = el.style.getPropertyValue('--target-width');
+        obs.unobserve(el);
+      }
+    }, { threshold: 0.3 });
+    obs.observe(el);
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

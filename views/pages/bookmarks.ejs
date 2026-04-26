@@ -1,0 +1,39 @@
+<!-- bookmarks.ejs -->
+<div class="bookmarks-layout">
+  <h1 class="page-title">Bookmarks</h1>
+  <div class="folder-tabs">
+    <button class="folder-tab active" onclick="filterFolder(this,'all')">All <span class="folder-cnt"><%= bookmarks.length %></span></button>
+    <% (folders||[]).forEach(f => { %>
+    <button class="folder-tab" onclick="filterFolder(this,'<%= f.name %>')" data-folder="<%= f.name %>" style="--fc:<%= f.color %>">
+      <%= f.icon %> <%= f.name %>
+      <span class="folder-cnt"><%= (grouped[f.name]||[]).length %></span>
+    </button>
+    <% }) %>
+  </div>
+
+  <div class="bookmarks-list" id="bm-list">
+    <% if (bookmarks.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">🔖</div>
+      <p>No bookmarks yet.</p>
+      <a href="/feed" class="btn-ghost btn-sm mt-16">Browse the feed →</a>
+    </div>
+    <% } %>
+    <% bookmarks.forEach((bm,i) => { %>
+    <div class="bm-card reveal" data-folder="<%= bm.folder %>">
+      <div class="bm-card-inner">
+        <a href="/posts/<%= bm.post && bm.post._id ? bm.post._id : '#' %>" class="bm-title">
+          <%= bm.post ? bm.post.title : 'Post unavailable' %>
+        </a>
+        <div class="bm-tags">
+          <% if (bm.post && bm.post.tags) { bm.post.tags.slice(0,3).forEach(t => { %>
+          <span class="post-tag">#<%= t %></span>
+          <% }) } %>
+          <span class="bm-folder-label"><%= bm.folder %></span>
+        </div>
+      </div>
+      <button class="bm-remove" onclick="removeBookmark(this,'<%= bm.post && bm.post._id ? bm.post._id : '' %>')">✕</button>
+    </div>
+    <% }) %>
+  </div>
+</div>

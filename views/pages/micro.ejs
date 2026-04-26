@@ -1,0 +1,48 @@
+<!-- micro.ejs -->
+<div class="micro-layout">
+  <div class="micro-header">
+    <div>
+      <h1 class="page-title">Micro-Learning</h1>
+      <p class="micro-sub">Swipe through concepts, one at a time</p>
+    </div>
+    <a href="/feed" class="btn-ghost btn-sm">Exit</a>
+  </div>
+
+  <div class="micro-progress-wrap">
+    <div class="micro-prog-labels">
+      <span id="seen-count">0</span> / <span id="total-count">8</span> reviewed
+    </div>
+    <div class="micro-prog-track"><div class="micro-prog-fill" id="micro-prog-fill"></div></div>
+  </div>
+
+  <div class="micro-stack" id="micro-stack">
+    <div class="micro-shadow micro-shadow-2"></div>
+    <div class="micro-shadow micro-shadow-1"></div>
+    <div class="micro-card" id="micro-card">
+      <div class="mc-top">
+        <span class="mc-tag" id="mc-tag"></span>
+        <span class="mc-counter" id="mc-counter"></span>
+      </div>
+      <div class="mc-front" id="mc-front">
+        <div class="mc-concept" id="mc-concept"></div>
+        <p class="mc-hint">Tap to reveal explanation</p>
+      </div>
+      <div class="mc-back" id="mc-back" style="display:none">
+        <p class="mc-body" id="mc-body"></p>
+      </div>
+      <p class="mc-drag-hint">Drag ← → to navigate · Tap to flip</p>
+    </div>
+  </div>
+
+  <div class="micro-controls">
+    <button class="micro-nav-btn" id="btn-prev" onclick="microGo(-1)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <button class="btn-ghost" id="btn-flip" onclick="microFlip()">Flip card</button>
+    <button class="micro-nav-btn" id="btn-next" onclick="microGo(1)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <div class="micro-dots" id="micro-dots"></div>
+</div>

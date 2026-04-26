@@ -1,0 +1,43 @@
+<div class="topic-layout">
+  <a href="/feed" class="back-link">← Back to feed</a>
+
+  <div class="topic-header-card">
+    <h1 class="topic-title">#<%= tag %></h1>
+    <p class="topic-sub">Follow the roadmap to master <%= tag %> from the ground up.</p>
+    <div class="topic-legend">
+      <span class="legend-item"><span class="legend-dot beg"></span> Beginner</span>
+      <span class="legend-item"><span class="legend-dot mid"></span> Intermediate</span>
+      <span class="legend-item"><span class="legend-dot adv"></span> Advanced</span>
+    </div>
+  </div>
+
+  <div class="roadmap-section">
+    <h2 class="section-heading">Learning Roadmap</h2>
+    <div class="roadmap-nodes">
+      <div class="roadmap-line"></div>
+      <% (roadmap||[]).forEach((node, i) => { %>
+      <a href="/feed?tags=<%= tag %>&difficulty=<%= node.level %>" class="roadmap-node reveal">
+        <div class="node-circle <%= node.level === 'beginner' ? 'nc-beg' : node.level === 'intermediate' ? 'nc-mid' : 'nc-adv' %>">
+          <%= node.id %>
+        </div>
+        <div class="node-info">
+          <div class="node-title"><%= node.title %></div>
+          <div class="node-desc"><%= node.desc %></div>
+        </div>
+        <span class="node-count"><%= node.postCount %> posts</span>
+      </a>
+      <% }) %>
+    </div>
+  </div>
+
+  <h2 class="section-heading mt-40">Posts in #<%= tag %></h2>
+  <div class="posts-grid">
+    <% if (posts && posts.length > 0) { %>
+      <% posts.forEach((post,i) => { -%>
+        <%- include('../partials/post-card', { post, user }) %>
+      <% }) %>
+    <% } else { %>
+    <div class="empty-state"><div class="empty-icon">📭</div><p>No posts yet for #<%= tag %></p></div>
+    <% } %>
+  </div>
+</div>
